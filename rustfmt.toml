@@ -1,0 +1,16 @@
+max_width = 100
+newline_style = "Unix"
+wrap_comments = true
+normalize_comments = true
+merge_derives = true
+force_explicit_abi = true
+edition = "2018"
+unstable_features = true
+version = "Two"
+merge_imports = true
+error_on_line_overflow = true
+error_on_unformatted = true
+format_strings = true
+reorder_imports = true
+hard_tabs = true
+use_try_shorthand = true

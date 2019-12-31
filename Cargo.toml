@@ -1,0 +1,25 @@
+[package]
+name = "aiven_rs"
+version = "0.1.0"
+authors = ["Ankur Srivastava <ankur.srivastava@email.de>"]
+description = "Write some description for your project here."
+documentation = "https://docs.rs/aiven-rs"
+homepage = "https://github.com/ansrivas/aiven-rs"
+repository = "https://github.com/ansrivas/aiven-rs"
+readme = "README.md"
+keywords = ["some-awesome-keywords"]
+license = "mit"
+categories = ["category keywords"]
+edition="2018"
+
+[lib]
+name = "aiven_rs"
+path = "src/lib.rs"
+
+[[bin]]
+name = "aiven-rs"
+path = "src/main.rs"
+
+[dependencies]
+
+[dev-dependencies]
