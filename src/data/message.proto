@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package messages;
+
+message BatchMessage {
+  repeated Message multiple_points = 3;
+}
+
+message Message {
+  int64 timestamp = 1;
+  string name = 2;
+  float value = 3;
+}

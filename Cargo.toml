@@ -1,25 +1,59 @@
 [package]
-name = "aiven_rs"
-version = "0.1.0"
 authors = ["Ankur Srivastava <ankur.srivastava@email.de>"]
+categories = ["category keywords"]
 description = "Write some description for your project here."
 documentation = "https://docs.rs/aiven-rs"
+edition = "2018"
 homepage = "https://github.com/ansrivas/aiven-rs"
-repository = "https://github.com/ansrivas/aiven-rs"
-readme = "README.md"
 keywords = ["some-awesome-keywords"]
 license = "mit"
-categories = ["category keywords"]
-edition="2018"
-
-[lib]
 name = "aiven_rs"
-path = "src/lib.rs"
-
+readme = "README.md"
+repository = "https://github.com/ansrivas/aiven-rs"
+version = "0.1.0"
 [[bin]]
 name = "aiven-rs"
 path = "src/main.rs"
 
+[build-dependencies]
+[build-dependencies.prost-build]
+version = "0.5.0"
+
 [dependencies]
+anyhow = "1.0"
+bytes = "0.4"
+deadpool-postgres = "0.4.2"
+dotenv = "0.9.0"
+env_logger = "0.7.1"
+envy = "0.4"
+log = "0.4"
+prost = "0.5.0"
+serde = "1.0"
+serde_json = "1.0"
+structopt = "0.3"
+sysinfo = "0.10.3"
+thiserror = "1.0"
+postgres-native-tls ="0.3.0"
+native-tls = "*"
+
+[dependencies.chrono]
+features = ["serde"]
+version = "0.4"
+
+[dependencies.futures]
+version = "0.3"
+
+[dependencies.rdkafka]
+features = ["cmake-build", "gssapi", "ssl"]
+git = "https://github.com/fede1024/rust-rdkafka"
+rev = "6f725fe18f508ecb2b3b5578bcb3aedddd4c9799"
+
+[dependencies.tokio]
+features = ["blocking", "macros", "rt-core", "time", "stream", "sync"]
+version = "0.2.9"
+
+[dependencies.tokio-postgres]
+features = ["with-chrono-0_4"]
+version = "0.5.1"
 
 [dev-dependencies]

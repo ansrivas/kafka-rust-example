@@ -43,26 +43,36 @@ endif
 test:   install_sccache       ## Run all the tests
 ifdef IS_CI
 	@echo "*********** This is CI server. Running tests now                  ***********"
-	@RUSTC_WRAPPER=$(CI_PROJECT_DIR)/.cargo/bin/sccache cargo test --all -- --nocapture
+	@RUSTC_WRAPPER=$(CI_PROJECT_DIR)/.cargo/bin/sccache cargo test -- --test-threads 1 --nocapture
 else
 	@echo "*********** This is Local Machine. Running tests now              ***********"
-	@RUSTC_WRAPPER=$(HOME)/.cargo/bin/sccache cargo test --all -- --nocapture
+	@RUSTC_WRAPPER=$(HOME)/.cargo/bin/sccache cargo test -- --test-threads 1 --nocapture
 endif
 
 clean:         ## Clean the application
 	@cargo clean
 
+.PHONY: run_debug
+run_debug: ## Run a quick debug build
+	cargo build
+	RUST_LOG=debug APPLICATION_CONFIG_PATH=./config/env.dev ./target/debug/aiven-rs
+
 .PHONY : build_release
-build_release: clean test install_sccache ## Create a release build
-	RUSTC_WRAPPER=$(HOME)/.cargo/bin/sccache RUSTFLAGS='-C link-args=-s' cargo build --release --target=x86_64-unknown-linux-musl
+build_release: test install_sccache ## Create a release build
+	cross build --release --target=x86_64-unknown-linux-musl
+	#RUSTC_WRAPPER=$(HOME)/.cargo/bin/sccache RUSTFLAGS='-C link-args=-s' cargo build --release --target=x86_64-unknown-linux-musl
+
+.PHONY: migrations
+migrations:   ## Run migrations
+	alembic upgrade head
 
 .PHONY : lint
 lint: ## Run tests, fmt and clippy on this
-	cargo test --all && touch src/main.rs && cargo clippy --all && cargo fmt --all -- --check
+	touch src/main.rs && cargo clippy --all && cargo +nightly fmt --all
 
 .PHONY : docs
 docs:  ## Generate the docs for this project. Docs are located in target/doc/test_rs
-	@cargo doc --no-deps
+	@cargo doc --bin aiven-rs --no-deps
 
 .PHONY : docs-open
 docs-open: docs ## Generate docs and open with xdg-open

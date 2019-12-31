@@ -2,18 +2,16 @@
 // extern crate aiven_rs;
 
 // use aiven_rs;
-use std::boxed::Box;
-use std::error::Error;
-use std::process;
+use std::{boxed::Box, error::Error, process};
 
-fn example() -> Result<(), Box<Error>> {
-    println!("Hello world");
-    Ok(())
+fn example() -> Result<(), Box<dyn Error>> {
+	println!("Hello world");
+	Ok(())
 }
 
 fn main() {
-    if let Err(err) = example() {
-        println!("error running example: {}", err);
-        process::exit(1);
-    }
+	if let Err(err) = example() {
+		println!("error running example: {}", err);
+		process::exit(1);
+	}
 }
