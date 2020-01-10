@@ -2,9 +2,9 @@
 
 This is an application which
 - reads bunch of metrics from your machine/docker-container
-- publishes it to Aiven-Kafka topic `metrics`
-- subscribes to Aiven-Kafka topic `metrics`
-- reads the information from that topic and writes to Aiven-postgres `defaultdb.metrics` on remote server
+- publishes it to Kafka topic `metrics`
+- subscribes to Kafka topic `metrics`
+- reads the information from that topic and writes to postgres `defaultdb.metrics` on remote server
 
 ### Design:
 - The application is divided into two sub-parts: `metrics-publisher` and `metrics-subscriber`. Each of these two subparts is exposed as a command line entry point.
@@ -30,62 +30,27 @@ Use a virtual environment with `python 3.7` installed in it:
 pip install -e .[dev]
 ```
 
-### Connection to Aiven Platform:
+### Configuration:
 There are two methods for the execution - dockerized and local installation. You need to follow until step 5 for both the methods.
+The default configuration is in `config/env.dev`.
 
-1. Login with your credentials on `https://console.aiven.io/`
-2. Go to `Create a new service`
-3. Postgres:
-  - Launch a postgres-v11 service on a cloud of your choice
-  - Copy the service-uri and put this in `alembic.ini` file:
-    - **IMPORTANT NOTE**: Change the `postgres://` to `postgresql://` in your service-uri.
-    ```
-    sqlalchemy.url=<service-uri-postgresql>
-    ```
-  - Also download the `CA-Certificate` from `Overview` tab and put it in ``certs/ca-postgres.pem``
-  - Now edit the configuration file `config/env.prod`
-    - `APPLICATION_POSTGRES_DATABASE_URL=<service-uri-postgresql>`
-    - `APPLICATION_POSTGRES_CERT_PATH=<path-to-ca-certificate>`
-  - At this point run `make migrations` to create the tables etc.
-
-4. Kafka:
-  - Launch a kafka-cluster- v2.4
-  - When the cluster is ready, download the CA-certificate from `Overview` tab and put it in `certs/ca-kafka.pem`
-  - While on `Overview` tab, scroll down to `Advanced Configuration` and
-    - enable `kafka_authentication_methods.sasl`
-    - enable `kafka.auto_create_topics_enable` ( You can manually create the topic `metrics` as well.)
-    - and hit `Save Advanced Configuration`.
-  - After saving the configuration you will notice `Authentication method` under the `Overview` tab, set it to `SASL`
-  - Edit again the `config/env.prod` file:
-    - APPLICATION_KAFKA_BROKERS="<Kafka-Service-URI"
-    - APPLICATION_KAFKA_TOPIC="metrics"
-    - APPLICATION_KAFKA_USERNAME="Username-from-users-tab"
-    - APPLICATION_KAFKA_PASSWORD="Password-from-users-tab"
-    - APPLICATION_KAFKA_CA_CERT_PATH="Path-to-downloaded Kafka CA certificate"
-
-5. Now we are ready with the configurations.
-
-### Local Installation Method
-1. At this point inside a virtual-environment simply run `pip install -e .[dev]`
-2. After installation of the project from **Installation** stage we will get these three binaries in our path:
-`metrics-publisher`,  `metrics-subscriber` and `check-db-data`.
-3. Use the configuration file locally `config/env.prod`
-4. In one terminal, launch the subscriber:
+1. Use the configuration file locally `config/env.dev`
+2. In one terminal, launch the subscriber:
 ```
-$ RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.prod metrics-subscriber --loglevel=DEBUG
+$ RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev metrics-subscriber --loglevel=DEBUG
 ```
-5. In another terminal launch the publisher:
+3. In another terminal launch the publisher:
 ```
-$ RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.prod metrics-publisher --loglevel=DEBUG
+$ RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev metrics-publisher --loglevel=DEBUG
 ```
-6. Once everything works perfectly fine, simply run this to check the amount of data being written currently
+4. Once everything works perfectly fine, simply run this to check the amount of data being written currently
 ```
-RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.prod check-db-data
+RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev check-db-data
 ```
 
 ### Dockerized Method:
 1. Dockerized method can be used after `step 5`.
-2. This step assumes that your config file is `config/env.prod`
+2. This step assumes that your config file is `config/env.dev`
 3. `alembic.ini` is populated properly
 4. Certificates are in `certs` directory.
 5. Thus, you build the docker container first:
