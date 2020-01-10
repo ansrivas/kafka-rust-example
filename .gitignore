@@ -4,3 +4,4 @@ build
 target
 Cargo.lock
 scratch*
+__pycache__

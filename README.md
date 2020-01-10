@@ -34,48 +34,6 @@ pip install -e .[dev]
 There are two methods for the execution - dockerized and local installation. You need to follow until step 5 for both the methods.
 The default configuration is in `config/env.dev`.
 
-1. Use the configuration file locally `config/env.dev`
-2. In one terminal, launch the subscriber:
-```
-$ RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev metrics-subscriber --loglevel=DEBUG
-```
-3. In another terminal launch the publisher:
-```
-$ RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev metrics-publisher --loglevel=DEBUG
-```
-4. Once everything works perfectly fine, simply run this to check the amount of data being written currently
-```
-RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev check-db-data
-```
-
-### Dockerized Method:
-1. Dockerized method can be used after `step 5`.
-2. This step assumes that your config file is `config/env.dev`
-3. `alembic.ini` is populated properly
-4. Certificates are in `certs` directory.
-5. Thus, you build the docker container first:
-  ```
-  make build_docker
-  ```
-6. Run the migrations:
-  ```
-  make dockerized_migrations
-  ```
-7. In one terminal spawn the publisher:
-  ```
-  make dockerized_publisher
-  ```
-
-8. In another spawn the consumer:
-  ```
-  make dockerized_subscriber
-  ```
-
-9. After everything runs, simply count the rows in the remote db:
-  ```
-  make dockerized_check_db_data
-  ```
-
 
 ### Local Development Mode:
 - For local development please run `docker-compose up -d`
@@ -93,7 +51,7 @@ RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev check-db-data
   ```
    make migrations
   ```
-- After building the project, you will find a binary inside `target/debug/aiven-rs`
+- After building the project (`cargo build`), you will find a binary inside `target/debug/aiven-rs`
 - Run the publisher as:
   ```
   RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/debug/aiven-rs metrics-publisher
