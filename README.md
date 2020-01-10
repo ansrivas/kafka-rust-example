@@ -6,6 +6,12 @@ This is an application which
 - subscribes to Kafka topic `metrics`
 - reads the information from that topic and writes to postgres `defaultdb.metrics` on remote server
 
+### Why this application?
+Simply to make myself aware of the followings in rust-ecosystem:
+- Protobuf in rust
+- Kafka in rust
+- Postgres in rust
+
 ### Design:
 - The application is divided into two sub-parts: `metrics-publisher` and `metrics-subscriber`. Each of these two subparts is exposed as a command line entry point.
 
