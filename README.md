@@ -33,7 +33,7 @@ Simply to make myself aware of the followings in rust-ecosystem:
 ### Installation
 Use a virtual environment with `python 3.7` installed in it:
 ```
-pip install -e .[dev]
+pip install alembic
 ```
 
 ### Configuration:
