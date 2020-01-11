@@ -1,7 +1,7 @@
 //! Basic example.
-// extern crate aiven_rs;
+// extern crate kafka_rust_rs;
 
-// use aiven_rs;
+// use kafka_rust_rs;
 use std::{boxed::Box, error::Error, process};
 
 fn example() -> Result<(), Box<dyn Error>> {

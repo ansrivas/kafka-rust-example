@@ -55,7 +55,7 @@ clean:         ## Clean the application
 .PHONY: run_debug
 run_debug: ## Run a quick debug build
 	cargo build
-	RUST_LOG=debug APPLICATION_CONFIG_PATH=./config/env.dev ./target/debug/aiven-rs
+	RUST_LOG=debug APPLICATION_CONFIG_PATH=./config/env.dev ./target/debug/kafka-rust
 
 .PHONY : build_release
 build_release: test install_sccache ## Create a release build
@@ -72,8 +72,8 @@ lint: ## Run tests, fmt and clippy on this
 
 .PHONY : docs
 docs:  ## Generate the docs for this project. Docs are located in target/doc/test_rs
-	@cargo doc --bin aiven-rs --no-deps
+	@cargo doc --bin kafka-rust --no-deps
 
 .PHONY : docs-open
 docs-open: docs ## Generate docs and open with xdg-open
-	@xdg-open target/doc/aiven_rs/index.html
+	@xdg-open target/doc/kafka_rust/index.html
