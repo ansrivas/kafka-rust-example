@@ -46,7 +46,7 @@ version = "0.3"
 [dependencies.rdkafka]
 features = ["cmake-build", "gssapi", "ssl"]
 git = "https://github.com/fede1024/rust-rdkafka"
-rev = "6f725fe18f508ecb2b3b5578bcb3aedddd4c9799"
+rev = "855e41de7b1e27e604f8e148fd7ccc039520c163"
 
 [dependencies.tokio]
 features = ["blocking", "macros", "rt-core", "time", "stream", "sync"]
