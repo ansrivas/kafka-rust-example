@@ -22,7 +22,7 @@ version = "0.6.1"
 [dependencies]
 anyhow = "1.0"
 bytes = "0.5"
-deadpool-postgres = "0.4.2"
+deadpool-postgres = "0.5.5"
 dotenv = "0.15.0"
 env_logger = "0.7.1"
 envy = "0.4"
