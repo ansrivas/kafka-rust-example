@@ -26,6 +26,7 @@ use rdkafka::{
 	config::ClientConfig,
 	producer::{future_producer::DeliveryFuture, FutureProducer, FutureRecord},
 };
+use std::time::Duration;
 
 pub struct KafkaProducer {
 	producer: FutureProducer,
@@ -74,10 +75,10 @@ impl KafkaProducer {
 	/// Publish a BytesMut record to a given topic on Kafka.
 	pub async fn produce(&self, data: BytesMut, topic: &str) {
 		let record = FutureRecord::to(topic).key("some key").payload(&data[..]);
-		let produce_future: DeliveryFuture = self.producer.send(record, 0);
-		match produce_future.await {
-			Ok(Ok(delivery)) => debug!("Sent: {:?}", delivery),
-			Ok(Err((e, _))) => error!("Error: {:?}", e),
+		// let produce_future: DeliveryFuture = self.producer.send(record, 0);
+		let produce_future = self.producer.send(record, Duration::from_millis(100)).await;
+		match produce_future {
+			Ok(message) => debug!("Status: {:?}", message),
 			Err(_) => error!("Future cancelled"),
 		};
 	}

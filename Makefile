@@ -57,8 +57,12 @@ run_debug: ## Run a quick debug build
 	cargo build
 	RUST_LOG=debug APPLICATION_CONFIG_PATH=./config/env.dev ./target/debug/kafka-rust
 
+.PHONY: cross
+cross: ## Install cargo cross for cross comilation
+	cargo install cross
+
 .PHONY : build_release
-build_release: test install_sccache ## Create a release build
+build_release: test install_sccache cross ## Create a release build
 	cross build --release --target=x86_64-unknown-linux-musl
 	#RUSTC_WRAPPER=$(HOME)/.cargo/bin/sccache RUSTFLAGS='-C link-args=-s' cargo build --release --target=x86_64-unknown-linux-musl
 

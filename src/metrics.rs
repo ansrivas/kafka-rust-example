@@ -113,6 +113,9 @@ mod tests {
 
 		let message = messages[0].clone();
 		assert!(message.name == "used-memory".to_string());
-		assert!(message.value > 0.0f32);
+		assert!(
+			message.value >= 0.0f32,
+			format!("Actual value was {:?}", message.value)
+		);
 	}
 }

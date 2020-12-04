@@ -182,7 +182,7 @@ async fn handle_message_receiving(config: Arc<Config>, dbclient: DBClient) {
 /// by a kafka producer to publish this message to a kafka-topic.
 async fn handle_message_publishing(config: Arc<Config>) {
 	// Create a mpsc channel to publish data to
-	let (mut tx, mut rx) = mpsc::channel(100);
+	let (tx, mut rx) = mpsc::channel(100);
 	let mut batch_messages = BatchMessage::default();
 	// Spawn an async task to collect metrics
 	task::spawn(async move {
@@ -221,7 +221,10 @@ async fn handle_message_publishing(config: Arc<Config>) {
 	while let Some(data) = rx.recv().await {
 		debug!("Received data on the incoming channel");
 		kproducer.produce(data, &config.kafka_topic).await;
-		info!("Published data successfully on kafka topic: {}", &config.kafka_topic);
+		info!(
+			"Published data successfully on kafka topic: {}",
+			&config.kafka_topic
+		);
 	}
 }
 

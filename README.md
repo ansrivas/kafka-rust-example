@@ -1,25 +1,31 @@
 # kafka-rust-example
 
 This is an application which
+
 - reads bunch of metrics from your machine/docker-container
 - publishes it to Kafka topic `metrics`
 - subscribes to Kafka topic `metrics`
 - reads the information from that topic and writes to postgres `defaultdb.metrics` on remote server
 
 ### Why this application?
+
 Simply to make myself aware of the followings in rust-ecosystem:
+
 - Protobuf in rust
 - Kafka in rust
 - Postgres in rust
 
 ### Design:
+
 - The application is divided into two sub-parts: `metrics-publisher` and `metrics-subscriber`. Each of these two subparts is exposed as a command line entry point.
 
 - `metrics-publisher`:
+
   - Launches a async-task to collect metrices to publish data on an tokio::sync::mpsc channel.
   - Another async-task listens to this channel and publishes this data to Kafka topic `metrics`
   - The messages are protobuf encoded and are sent out in batches. More details in `data/message.proto`
   - To edit the protobuf-message format, edit the `data/message.proto` file and re-generate the definitions using:
+
   ```
   make generate-proto
   ```
@@ -29,21 +35,34 @@ Simply to make myself aware of the followings in rust-ecosystem:
   - Each incoming protobuf-message is deserialized and published on the internal tokio::sync::mpsc channel
   - On receiving messages the database async-task writes this to the database.
 
-
 ### Installation
-Use a virtual environment with `python 3.7` installed in it:
+
+Use a virtual environment with `python 3.7` installed in it and install following two for running automated migrations:
+
 ```
-pip install alembic
+### For database migrations
+pip install alembic==1.4.3 psycopg2-binary==2.8.6
+make migrations
 ```
+
+TODO:
+Will be using one of the followings later:
+
+- https://github.com/rust-db/refinery
+- https://github.com/rust-db/barrel
+- https://github.com/jaemk/migrant_lib
+- https://github.com/launchbadge/sqlx
 
 ### Configuration:
+
 There are two methods for the execution - dockerized and local installation. You need to follow until step 5 for both the methods.
 The default configuration is in `config/env.dev`.
 
-
 ### Local Development Mode:
+
 - For local development please run `docker-compose up -d`
 - This will launch a bunch of docker containers locally, check it by running `docker ps`
+
   ```
   $ docker ps
   docker ps
@@ -53,6 +72,7 @@ The default configuration is in `config/env.dev`.
   6022042c83fe        confluentinc/cp-kafka:5.3.1         "/etc/confluent/dock…"   0.0.0.0:9092->9092/tcp     kafka
 
   ```
+
 - Run the migration using ( given `alembic.ini` is pointing to localhost-postgres)
   ```
    make migrations
@@ -70,5 +90,7 @@ The default configuration is in `config/env.dev`.
   ```
   RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/debug/kafka-rust-example check-db-data
   ```
+
 ## License
+
 MIT

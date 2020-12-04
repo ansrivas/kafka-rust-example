@@ -21,20 +21,25 @@ version = "0.6.1"
 
 [dependencies]
 anyhow = "1.0"
-bytes = "0.5"
-deadpool-postgres = "0.5.5"
+bytes = "0.6"
+deadpool-postgres = "0.6"
 dotenv = "0.15.0"
-env_logger = "0.7.1"
+env_logger = "0.8"
 envy = "0.4"
 log = "0.4"
-prost = "0.6"
 serde = "1.0"
 serde_json = "1.0"
 structopt = "0.3"
-sysinfo = "0.15.0"
+sysinfo = "0.15"
 thiserror = "1.0"
-postgres-native-tls ="0.3.0"
+postgres-native-tls ={ version = "0.4"}
 native-tls = "*"
+# openssl = { version = "0.10", features = ["vendored"] }
+
+[dependencies.prost]
+git = "https://github.com/danburkert/prost"
+rev = "278e8ab695f4acb415ab6f780a5c85f0a1a3b0ec"
+# prost = "0.6"
 
 [dependencies.chrono]
 features = ["serde"]
@@ -44,16 +49,17 @@ version = "0.4"
 version = "0.3"
 
 [dependencies.rdkafka]
-features = ["cmake-build", "gssapi", "ssl"]
+features = ["cmake-build", "gssapi", "ssl", "tokio"]
+# version = "0.24.0"
 git = "https://github.com/fede1024/rust-rdkafka"
-rev = "855e41de7b1e27e604f8e148fd7ccc039520c163"
+rev = "4d44ab60cb345523b87bf9c84e0412fd8696ba44"
 
 [dependencies.tokio]
-features = ["blocking", "macros", "rt-core", "time", "stream", "sync"]
-version = "0.3.0"
+features = ["full"]
+version = "0.3"
 
 [dependencies.tokio-postgres]
 features = ["with-chrono-0_4"]
-version = "0.5.1"
+version = "0.6.0"
 
 [dev-dependencies]
