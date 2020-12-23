@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use dotenv;
 use std::env;
 
 use log::info;
@@ -30,6 +29,7 @@ const CONFIG_PREFIX: &str = "APPLICATION_";
 
 struct ConfigFn {}
 
+#[allow(dead_code)]
 impl ConfigFn {
 	fn fn_false() -> bool {
 		false

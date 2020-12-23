@@ -21,7 +21,6 @@ version = "0.6.1"
 
 [dependencies]
 anyhow = "1.0"
-bytes = "0.6"
 deadpool-postgres = "0.6"
 dotenv = "0.15.0"
 env_logger = "0.8"
@@ -38,8 +37,8 @@ native-tls = "*"
 
 [dependencies.prost]
 git = "https://github.com/danburkert/prost"
-rev = "278e8ab695f4acb415ab6f780a5c85f0a1a3b0ec"
-# prost = "0.6"
+rev = "423f5ec5bd165a7007a388edfb2b485d5bbf40c7"
+
 
 [dependencies.chrono]
 features = ["serde"]

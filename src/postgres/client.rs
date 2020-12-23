@@ -107,13 +107,13 @@ impl DBClient {
 	/// Basic usage:
 	///
 	/// ```rust norun
-	/// 	let conn_string = "postgresql://postgres:password@localhost:5432/timeseries";
+	/// let conn_string = "postgresql://postgres:password@localhost:5432/timeseries";
 	/// let client = DBClient::from(conn_string, path_to_cert);
 	/// client.get_count().await.unwrap();
 	/// // use this client from this point on.
 	/// ```
 	pub async fn get_count(&self) -> Result<i64, AppError> {
-		let mut client = self.pool.get().await?;
+		let client = self.pool.get().await?;
 		let stmt = client.prepare("SELECT COUNT(*) FROM metrics").await?;
 		let rows = client.query(&stmt, &[]).await?;
 		let value: i64 = rows[0].get(0);
@@ -126,14 +126,14 @@ impl DBClient {
 	/// Basic usage:
 	///
 	/// ```rust norun
-	/// 	let conn_string = "postgresql://postgres:password@localhost:5432/timeseries";
+	/// let conn_string = "postgresql://postgres:password@localhost:5432/timeseries";
 	/// let client = DBClient::from(conn_string, path_to_cert);
 	/// let batch_message = BatchMessage::default();
 	/// client.get_count().insert(batch_message).unwrap();
 	/// // use this client from this point on.
 	/// ```
 	pub async fn insert(&self, messages: &BatchMessage) -> Result<(), AppError> {
-		let mut client = self.pool.get().await?;
+		let client = self.pool.get().await?;
 		let stmt = client
 			.prepare("INSERT INTO metrics (timestamp, name, value) VALUES ($1, $2, $3)")
 			.await?;
@@ -159,7 +159,7 @@ impl DBClient {
 	/// client.insert_message(some_message).await.unwrap();
 	/// ```
 	pub async fn insert_message(&self, message: &Message) -> Result<(), AppError> {
-		let mut client = self.pool.get().await?;
+		let client = self.pool.get().await?;
 		let stmt = client
 			.prepare("INSERT INTO metrics (timestamp, name, value) VALUES ($1, $2, $3)")
 			.await?;
@@ -182,8 +182,9 @@ impl DBClient {
 	/// // Clean up the DB first
 	/// client.truncate().await.unwrap();
 	/// ```
+	#[allow(dead_code)]
 	pub(crate) async fn truncate(&self) -> Result<(), AppError> {
-		let mut client = self.pool.get().await?;
+		let client = self.pool.get().await?;
 		let stmt = client.prepare("TRUNCATE TABLE metrics").await?;
 		client.execute(&stmt, &[]).await?;
 

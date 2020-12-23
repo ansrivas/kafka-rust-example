@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use bytes::BytesMut;
 use log::{debug, error};
+use prost::bytes::BytesMut;
 use rdkafka::{
 	config::ClientConfig,
-	producer::{future_producer::DeliveryFuture, FutureProducer, FutureRecord},
+	producer::{FutureProducer, FutureRecord},
 };
 use std::time::Duration;
 
@@ -60,10 +60,10 @@ impl KafkaProducer {
 	///
 	/// ```rust norun
 	/// let producer = ClientConfig::new()
-	/// 			.set("bootstrap.servers", &conf.kafka_brokers)
-	/// 			.set("message.timeout.ms", "10000")
-	/// 			.create()
-	/// 			.expect("Producer creation error");
+	///     .set("bootstrap.servers", &conf.kafka_brokers)
+	///     .set("message.timeout.ms", "10000")
+	///     .create()
+	///     .expect("Producer creation error");
 	/// let kproducer = KafkaProducer::new_with_producer(producer);
 	/// ```
 	pub fn new_with_producer(kafka_producer: FutureProducer) -> KafkaProducer {

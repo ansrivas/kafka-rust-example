@@ -27,9 +27,10 @@ pub mod kafka;
 pub mod metrics;
 pub mod postgres;
 
-use bytes::BytesMut;
+use prost::bytes::BytesMut;
+
 use config::Config;
-use env_logger;
+
 use generated::BatchMessage;
 use kafka::{KafkaConsumer, KafkaProducer};
 use log::{debug, error, info};

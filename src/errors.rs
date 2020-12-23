@@ -22,7 +22,6 @@
 
 use deadpool_postgres::PoolError;
 use thiserror::Error;
-use tokio_postgres;
 
 /// Default AppError which provides translation between one error type to
 /// AppError

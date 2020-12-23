@@ -23,7 +23,7 @@
 use futures::StreamExt;
 use log::{debug, error, warn};
 
-use bytes::BytesMut;
+use prost::bytes::BytesMut;
 
 use rdkafka::{
 	config::{ClientConfig, RDKafkaLogLevel},
@@ -79,7 +79,7 @@ impl KafkaConsumer {
 	/// Consume the incoming topic and publishes the raw-payload to an internal
 	/// mpsc channel to be consumed by another async-task which then writes the
 	/// data to postgres.
-	pub async fn consume(&self, mut sender_tx: mpsc::Sender<BytesMut>) {
+	pub async fn consume(&self, sender_tx: mpsc::Sender<BytesMut>) {
 		debug!("initiating data consumption from kafka-topic");
 
 		let mut message_stream = self.kafka_consumer.start();
