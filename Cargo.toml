@@ -55,7 +55,7 @@ rev = "4d44ab60cb345523b87bf9c84e0412fd8696ba44"
 
 [dependencies.tokio]
 features = ["full"]
-version = "0.3"
+version = "1.0"
 
 [dependencies.tokio-postgres]
 features = ["with-chrono-0_4"]
