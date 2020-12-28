@@ -41,9 +41,9 @@ use rdkafka::{
 	config::{ClientConfig, RDKafkaLogLevel},
 	consumer::stream_consumer::StreamConsumer,
 };
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 use structopt::{clap::Shell, StructOpt};
-use tokio::{self, stream::StreamExt, sync::mpsc, task, time};
+use tokio::{self, sync::mpsc, task, time, time::Duration};
 
 #[derive(Debug, StructOpt)]
 pub enum Command {
@@ -185,14 +185,14 @@ async fn handle_message_publishing(config: Arc<Config>) {
 	// Create a mpsc channel to publish data to
 	let (tx, mut rx) = mpsc::channel(100);
 	let mut batch_messages = BatchMessage::default();
+
 	// Spawn an async task to collect metrics
 	task::spawn(async move {
 		debug!("Starting to produce the data");
 
 		let mut interval = time::interval(Duration::from_millis(1000));
-
 		loop {
-			interval.next().await.unwrap();
+			interval.tick().await;
 			// This is in its own scope so that it gets collected and
 			// ulimits are respected
 			{
@@ -215,8 +215,10 @@ async fn handle_message_publishing(config: Arc<Config>) {
 	});
 
 	let conf = config.clone();
+
 	// Create a kafka producer
 	let kproducer = create_producer(conf);
+
 	// Start reading data in the main thread
 	// and publish it to Kafka
 	while let Some(data) = rx.recv().await {
