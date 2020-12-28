@@ -30,6 +30,7 @@ pub mod postgres;
 use prost::bytes::BytesMut;
 
 use config::Config;
+use uuid::Uuid;
 
 use generated::BatchMessage;
 use kafka::{KafkaConsumer, KafkaProducer};
@@ -103,10 +104,15 @@ fn create_consumer(conf: Arc<Config>) -> KafkaConsumer {
 			.set_log_level(RDKafkaLogLevel::Debug)
 			.create()
 			.expect("Consumer creation failed");
-		KafkaConsumer::new_with_consumer(consumer, &[&conf.kafka_topic])
-	} else {
-		KafkaConsumer::new(&conf.kafka_brokers, "some_random_id", &[&conf.kafka_topic])
+		return KafkaConsumer::new_with_consumer(consumer, &[&conf.kafka_topic]);
 	}
+
+	let group_id = Uuid::new_v4();
+	KafkaConsumer::new(
+		&conf.kafka_brokers,
+		&group_id.to_string(),
+		&[&conf.kafka_topic],
+	)
 }
 
 /// Create a producer based on the given configuration.
@@ -117,6 +123,7 @@ fn create_producer(conf: Arc<Config>) -> KafkaProducer {
 	let is_tls = conf.kafka_ca_cert_path.is_some()
 		&& conf.kafka_password.is_some()
 		&& conf.kafka_username.is_some();
+
 	if is_tls {
 		let username = conf
 			.kafka_username
@@ -140,10 +147,10 @@ fn create_producer(conf: Arc<Config>) -> KafkaProducer {
 			.set("ssl.ca.location", ca_path)
 			.create()
 			.expect("Producer creation error");
-		KafkaProducer::new_with_producer(producer)
-	} else {
-		KafkaProducer::new(&conf.kafka_brokers)
+		return KafkaProducer::new_with_producer(producer);
 	}
+
+	KafkaProducer::new(&conf.kafka_brokers)
 }
 
 /// Handle the message subscription command.

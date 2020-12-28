@@ -34,6 +34,7 @@ thiserror = "1.0"
 postgres-native-tls ={ version = "0.5"}
 native-tls = "*"
 # openssl = { version = "0.10", features = ["vendored"] }
+uuid = { version = "0.8", features = ["v4"] }
 
 [dependencies.prost]
 version = "0.7"
