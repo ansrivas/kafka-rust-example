@@ -59,6 +59,6 @@ version = "0.3"
 
 [dependencies.tokio-postgres]
 features = ["with-chrono-0_4"]
-version = "0.6.0"
+version = "0.7.0"
 
 [dev-dependencies]
