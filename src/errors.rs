@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 use deadpool_postgres::PoolError;
+use std::io;
 use thiserror::Error;
 
 /// Default AppError which provides translation between one error type to
@@ -31,4 +32,10 @@ pub enum AppError {
 	PoolConnError(#[from] PoolError),
 	#[error("Failed to get a db-connection from internal tokio postgres")]
 	TokioConnError(#[from] tokio_postgres::Error),
+
+	#[error(transparent)]
+	IoError(#[from] io::Error),
+
+	#[error(transparent)]
+	TLSError(#[from] native_tls::Error),
 }

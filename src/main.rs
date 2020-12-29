@@ -251,7 +251,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let dbclient = DBClient::from(
 		&app_config.postgres_database_url,
 		app_config.postgres_cert_path.as_deref(),
-	);
+	)?;
 
 	match opt.command {
 		Command::MetricsPublisher => {

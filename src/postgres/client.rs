@@ -71,12 +71,13 @@ impl DBClient {
 	/// let client = DBClient::from(conn_string, path_to_cert);
 	/// // use this client from this point on.
 	/// ```
-	pub fn from(conn_string: &str, cert_path: Option<&str>) -> DBClient {
+	pub fn from(conn_string: &str, cert_path: Option<&str>) -> Result<DBClient, AppError> {
 		let config = conn_string
 			.parse::<Config>()
 			.expect("Failed to parse db-connection string");
-		let connection_pool = if let Some(cert_path) = cert_path {
-			let connector = DBClient::create_tls_connection(cert_path);
+
+		let pool = if let Some(cert_path) = cert_path {
+			let connector = DBClient::create_tls_connection(cert_path)?;
 			let mgr = Manager::new(config, connector);
 			Pool::new(mgr, 16)
 		} else {
@@ -84,21 +85,22 @@ impl DBClient {
 			Pool::new(mgr, 16)
 		};
 
-		DBClient {
-			pool: connection_pool,
-		}
+		Ok(DBClient { pool })
 	}
 
-	fn create_tls_connection(path: &str) -> MakeTlsConnector {
-		let cert = fs::read(path)
-			.unwrap_or_else(|_| panic!("Failed to read the cert file from path: {}", path));
-		let cert = Certificate::from_pem(&cert)
-			.unwrap_or_else(|_| panic!("Failed to create the certificate from path: {}", path));
+	fn create_tls_connection(path: &str) -> Result<MakeTlsConnector, AppError> {
+		let cert_path = fs::read(path)?;
+		// .unwrap_or_else(|_| panic!("Failed to read the cert file from path: {}", path));
+
+		let cert = Certificate::from_pem(&cert_path)?;
+		// .unwrap_or_else(|_| panic!("Failed to create the certificate from path: {}", path));
+
 		let connector = TlsConnector::builder()
 			.add_root_certificate(cert)
 			.build()
 			.expect("Failed to create a tls connector for Postgres");
-		MakeTlsConnector::new(connector)
+
+		Ok(MakeTlsConnector::new(connector))
 	}
 
 	/// Get current count of rows in the database.
