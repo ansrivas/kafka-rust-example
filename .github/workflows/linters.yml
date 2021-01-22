@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         rust:
-          - nightly
+          - stable
     steps:
       - name: Install sasl
         run: sudo apt-get install -y libsasl2-dev
