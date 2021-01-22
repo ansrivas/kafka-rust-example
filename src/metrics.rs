@@ -47,11 +47,11 @@ impl MetricsGenerator {
 	/// Create a metrics message out of given entries.
 	/// In case timestamp is not provided Utc::now() is set as timestamp entry.
 	pub(crate) fn create_metrics(name: String, value: f32, timestamp: Option<i64>) -> Message {
-		let mut message = Message::default();
-		message.timestamp = timestamp.unwrap_or_else(|| Utc::now().timestamp_millis());
-		message.name = name;
-		message.value = value;
-		message
+		Message {
+			timestamp: timestamp.unwrap_or_else(|| Utc::now().timestamp_millis()),
+			name: name,
+			value: value,
+		}
 	}
 
 	/// Generate disk stats from running operating system.
