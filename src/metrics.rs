@@ -49,8 +49,8 @@ impl MetricsGenerator {
 	pub(crate) fn create_metrics(name: String, value: f32, timestamp: Option<i64>) -> Message {
 		Message {
 			timestamp: timestamp.unwrap_or_else(|| Utc::now().timestamp_millis()),
-			name: name,
-			value: value,
+			name,
+			value,
 		}
 	}
 

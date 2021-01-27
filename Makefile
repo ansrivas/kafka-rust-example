@@ -72,7 +72,7 @@ migrations:   ## Run migrations
 
 .PHONY : lint
 lint: ## Run tests, fmt and clippy on this
-	touch src/main.rs && cargo clippy --all && cargo +nightly fmt --all
+	touch src/main.rs && cargo clippy --all && cargo fmt --all
 
 .PHONY : docs
 docs:  ## Generate the docs for this project. Docs are located in target/doc/test_rs
