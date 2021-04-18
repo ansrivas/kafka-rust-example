@@ -36,7 +36,7 @@ use generated::BatchMessage;
 use kafka::{KafkaConsumer, KafkaProducer};
 use log::{debug, error, info};
 use metrics::MetricsGenerator;
-use postgres::DBClient;
+use postgres::DbClient;
 use prost::Message as PMessage;
 use rdkafka::{
 	config::{ClientConfig, RDKafkaLogLevel},
@@ -54,7 +54,7 @@ pub enum Command {
 
 	#[structopt(name = "check-db-data")]
 	/// Check the current count of rows in database.
-	CheckDBData,
+	CheckDbData,
 
 	#[structopt(name = "metrics-subscriber")]
 	/// Subscribe to a kafka-topic and write data to database.
@@ -159,7 +159,7 @@ fn create_producer(conf: Arc<Config>) -> KafkaProducer {
 /// Then the incoming message is deserialized back to BatchMessage and
 /// published to an internal channel.
 /// Then this data is read and published to postgres.
-async fn handle_message_receiving(config: Arc<Config>, dbclient: DBClient) {
+async fn handle_message_receiving(config: Arc<Config>, dbclient: DbClient) {
 	let (dbtx, mut dbrx) = mpsc::channel(100);
 	task::spawn(async move {
 		info!("Waiting to receive metrics-data on incoming queue.");
@@ -248,7 +248,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 	let app_config = Arc::new(Config::new());
 
-	let dbclient = DBClient::from(
+	let dbclient = DbClient::from(
 		&app_config.postgres_database_url,
 		app_config.postgres_cert_path.as_deref(),
 	)?;
@@ -262,7 +262,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 			info!("Subscriber was invoked");
 			handle_message_receiving(app_config.clone(), dbclient).await
 		}
-		Command::CheckDBData => {
+		Command::CheckDbData => {
 			let rows = dbclient.get_count().await?;
 			info!("Current count of rows in DB is {:?}", rows);
 		}

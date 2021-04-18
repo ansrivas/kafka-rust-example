@@ -1,2 +1,2 @@
 mod client;
-pub use client::DBClient;
+pub use client::DbClient;

@@ -37,5 +37,5 @@ pub enum AppError {
 	IoError(#[from] io::Error),
 
 	#[error(transparent)]
-	TLSError(#[from] native_tls::Error),
+	TlsError(#[from] native_tls::Error),
 }

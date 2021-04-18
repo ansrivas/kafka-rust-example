@@ -32,22 +32,22 @@ use postgres_native_tls::MakeTlsConnector;
 use std::fs;
 use tokio_postgres::Config;
 
-pub struct DBClient {
+pub struct DbClient {
 	pool: Pool,
 }
 
-impl DBClient {
-	/// Create a DBClient from username, password, etc.
+impl DbClient {
+	/// Create a DbClient from username, password, etc.
 	///
 	/// # Examples
 	/// Basic usage:
 	///
 	/// ```rust norun
 	/// let conn_string = "postgresql://postgres:password@localhost:5432/timeseries";
-	/// let client = DBClient::new("localhost", "5432", "username", "password", "dbname");
+	/// let client = DbClient::new("localhost", "5432", "username", "password", "dbname");
 	/// // use this client from this point on.
 	/// ```
-	pub fn new(host: &str, port: &str, username: &str, password: &str, dbname: &str) -> DBClient {
+	pub fn new(host: &str, port: &str, username: &str, password: &str, dbname: &str) -> DbClient {
 		let mut cfg = Config::new();
 		cfg.host(host);
 		cfg.port(port.parse::<u16>().unwrap());
@@ -56,7 +56,7 @@ impl DBClient {
 		cfg.dbname(dbname);
 		let mgr = Manager::new(cfg, tokio_postgres::NoTls);
 		let connection_pool = Pool::new(mgr, 16);
-		DBClient {
+		DbClient {
 			pool: connection_pool,
 		}
 	}
@@ -71,13 +71,13 @@ impl DBClient {
 	/// let client = DBClient::from(conn_string, path_to_cert);
 	/// // use this client from this point on.
 	/// ```
-	pub fn from(conn_string: &str, cert_path: Option<&str>) -> Result<DBClient, AppError> {
+	pub fn from(conn_string: &str, cert_path: Option<&str>) -> Result<DbClient, AppError> {
 		let config = conn_string
 			.parse::<Config>()
 			.expect("Failed to parse db-connection string");
 
 		let pool = if let Some(cert_path) = cert_path {
-			let connector = DBClient::create_tls_connection(cert_path)?;
+			let connector = DbClient::create_tls_connection(cert_path)?;
 			let mgr = Manager::new(config, connector);
 			Pool::new(mgr, 16)
 		} else {
@@ -85,7 +85,7 @@ impl DBClient {
 			Pool::new(mgr, 16)
 		};
 
-		Ok(DBClient { pool })
+		Ok(DbClient { pool })
 	}
 
 	fn create_tls_connection(path: &str) -> Result<MakeTlsConnector, AppError> {
@@ -201,7 +201,7 @@ mod tests {
 	use crate::MetricsGenerator;
 	#[tokio::test]
 	async fn test_insert_single_message() {
-		let client = DBClient::new("localhost", "5432", "postgres", "password", "timeseries");
+		let client = DbClient::new("localhost", "5432", "postgres", "password", "timeseries");
 
 		// Clean up the DB first
 		client.truncate().await.unwrap();
@@ -223,7 +223,7 @@ mod tests {
 
 	#[tokio::test]
 	async fn test_insert_batch_message() {
-		let client = DBClient::new("localhost", "5432", "postgres", "password", "timeseries");
+		let client = DbClient::new("localhost", "5432", "postgres", "password", "timeseries");
 
 		// Clean up the DB first
 		client.truncate().await.unwrap();
