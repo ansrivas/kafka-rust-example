@@ -35,6 +35,7 @@ postgres-native-tls ={ version = "0.5"}
 native-tls = "*"
 # openssl = { version = "0.10", features = ["vendored"] }
 uuid = { version = "0.8", features = ["v4"] }
+#sqlx = { version = "0.4", features = [ "postgres", "runtime-tokio-rustls" ] }
 
 [dependencies.prost]
 version = "0.7"
@@ -62,5 +63,3 @@ version = "1.5"
 [dependencies.tokio-postgres]
 features = ["with-chrono-0_4"]
 version = "0.7.0"
-
-[dev-dependencies]

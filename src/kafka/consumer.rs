@@ -88,7 +88,11 @@ impl KafkaConsumer {
 				Err(e) => warn!("Kafka error: {}", e),
 				Ok(m) => {
 					if let Some(raw_data) = m.payload() {
-						debug!("Received message on Kafka {:?}", &raw_data);
+						debug!(
+							"Received message on Kafka {:?} on offset {:?}",
+							&raw_data,
+							m.offset()
+						);
 						let payload = BytesMut::from(raw_data);
 						if let Err(e) = &sender_tx.send(payload).await {
 							error!("receiver dropped: {:?}", e);
