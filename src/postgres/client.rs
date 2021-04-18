@@ -214,10 +214,9 @@ mod tests {
 		let actual = client.get_count().await.unwrap();
 		assert!(
 			actual == expected,
-			format!(
-				"Failed tests expected: {:?}, actual: {:?}",
-				expected, actual
-			)
+			"Failed tests expected: {:?}, actual: {:?}",
+			expected,
+			actual
 		);
 	}
 
@@ -241,10 +240,9 @@ mod tests {
 		let actual = client.get_count().await.unwrap();
 		assert!(
 			actual == expected,
-			format!(
-				"Failed tests expected: {:?}, actual: {:?}",
-				expected, actual
-			)
+			"Failed tests expected: {:?}, actual: {:?}",
+			expected,
+			actual
 		);
 	}
 }

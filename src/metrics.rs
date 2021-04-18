@@ -108,14 +108,15 @@ mod tests {
 		let messages = mg.used_memory();
 		assert!(
 			messages.len() > 0,
-			format!("Should be able to collect the used memory")
+			"Should be able to collect the used memory"
 		);
 
 		let message = messages[0].clone();
 		assert!(message.name == "used-memory".to_string());
 		assert!(
 			message.value >= 0.0f32,
-			format!("Actual value was {:?}", message.value)
+			"Actual value was {:?}",
+			message.value
 		);
 	}
 }

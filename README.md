@@ -35,24 +35,11 @@ Simply to make myself aware of the followings in rust-ecosystem:
   - Each incoming protobuf-message is deserialized and published on the internal tokio::sync::mpsc channel
   - On receiving messages the database async-task writes this to the database.
 
-### Installation
-
-Use a virtual environment with `python 3.7` installed in it and install following two for running automated migrations:
-
-```
 ### For database migrations
-pip install alembic==1.4.3 psycopg2-binary==2.8.6
+```
+cargo install sqlx-cli
 make migrations
 ```
-
-TODO:
-Will be using one of the followings later:
-
-- https://github.com/rust-db/refinery
-- https://github.com/rust-db/barrel
-- https://github.com/jaemk/migrant_lib
-- https://github.com/launchbadge/sqlx
-
 ### Configuration:
 
 There are two methods for the execution - dockerized and local installation. You need to follow until step 5 for both the methods.
@@ -73,7 +60,7 @@ The default configuration is in `config/env.dev`.
 
   ```
 
-- Run the migration using ( given `alembic.ini` is pointing to localhost-postgres)
+- Run the migration using ( ensure you have `cargo install sqlx-cli`)
   ```
    make migrations
   ```
