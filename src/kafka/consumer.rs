@@ -82,7 +82,7 @@ impl KafkaConsumer {
 	pub async fn consume(&self, sender_tx: mpsc::Sender<BytesMut>) {
 		debug!("initiating data consumption from kafka-topic");
 
-		let mut message_stream = self.kafka_consumer.start();
+		let mut message_stream = self.kafka_consumer.stream();
 		while let Some(message) = message_stream.next().await {
 			match message {
 				Err(e) => warn!("Kafka error: {}", e),
