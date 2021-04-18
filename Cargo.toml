@@ -51,13 +51,13 @@ version = "0.3"
 
 [dependencies.rdkafka]
 features = ["cmake-build", "gssapi", "ssl", "tokio"]
-# version = "0.24.0"
-git = "https://github.com/fede1024/rust-rdkafka"
-rev = "8da55e2c58752d75babb800edc0162b519dd84e2"
+version = "0.26.0"
+# git = "https://github.com/fede1024/rust-rdkafka"
+# rev = "8da55e2c58752d75babb800edc0162b519dd84e2"
 
 [dependencies.tokio]
 features = ["rt-multi-thread", "macros", "io-util"]
-version = "1.0"
+version = "1.5"
 
 [dependencies.tokio-postgres]
 features = ["with-chrono-0_4"]
