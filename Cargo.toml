@@ -38,7 +38,7 @@ uuid = { version = "0.8", features = ["v4"] }
 #sqlx = { version = "0.4", features = [ "postgres", "runtime-tokio-rustls" ] }
 
 [dependencies.prost]
-version = "0.7"
+version = "0.8"
 # git = "https://github.com/danburkert/prost"
 # rev = "423f5ec5bd165a7007a388edfb2b485d5bbf40c7"
 
