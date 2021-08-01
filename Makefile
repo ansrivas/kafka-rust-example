@@ -2,6 +2,7 @@
 IS_TARPAULIN:=$(shell cargo list | grep tarpaulin)
 IS_CI:=$(CI)
 IS_SCCACHE:=""
+export DATABASE_URL = postgresql://postgres:password@localhost:5432/timeseries 
 
 .DEFAULT_GOAL := help
 help:             ## Show available options with this Makefile
@@ -67,8 +68,7 @@ build_release: test install_sccache cross ## Create a release build
 	#RUSTC_WRAPPER=$(HOME)/.cargo/bin/sccache RUSTFLAGS='-C link-args=-s' cargo build --release --target=x86_64-unknown-linux-musl
 
 .PHONY: migrations
-migrations:   ## Run migrations
-	@export DATABASE_URL=postgresql://postgres:password@localhost:5432/metrics 
+migrations:  ## Run migrations
 	sqlx database reset -y
 	# sqlx database drop
 	# sqlx database create

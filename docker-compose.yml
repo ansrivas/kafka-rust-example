@@ -1,35 +1,13 @@
 version: "3.5"
 services:
-  zk4kafka:
-    image: confluentinc/cp-zookeeper:5.2.1
-    container_name: zk4kafka
-    environment:
-      ZOOKEEPER_SERVER_ID: 1
-      ZOOKEEPER_CLIENT_PORT: 33472
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: localhost:33477:33478
-    ports:
-      - "33472:33472"
-    restart: always
-  kafka:
-    image: confluentinc/cp-kafka:5.2.1
-    container_name: kafka
-    depends_on:
-      - zk4kafka
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zk4kafka:33472
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
-    ports:
+  redpanda:
+    image: redpanda:latest
+    container_name: redpanda-c
+    ports: 
       - "9092:9092"
     restart: always
+    command: redpanda start --overprovisioned --smp 1 --memory 1G --reserve-memory 0M --node-id 0 --check=false
+  
   postgres-db:
     image: timescale/timescaledb:latest-pg11
     container_name: postgres-db
