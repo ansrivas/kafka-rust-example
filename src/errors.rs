@@ -37,5 +37,8 @@ pub enum AppError {
 	IoError(#[from] io::Error),
 
 	#[error(transparent)]
-	TlsError(#[from] native_tls::Error),
+	TlsError(#[from] rustls::TLSError),
+
+	#[error("failed to read database root certificate")]
+	FailedDBCertRead,
 }

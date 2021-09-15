@@ -27,10 +27,11 @@ use crate::{
 use chrono::prelude::*;
 use deadpool_postgres::{Manager, Pool};
 use log::info;
-use native_tls::{Certificate, TlsConnector};
-use postgres_native_tls::MakeTlsConnector;
+use rustls;
 use std::fs;
+use std::io::BufReader;
 use tokio_postgres::Config;
+use tokio_postgres_rustls::{self, MakeRustlsConnect};
 
 pub struct DbClient {
 	pool: Pool,
@@ -88,19 +89,17 @@ impl DbClient {
 		Ok(DbClient { pool })
 	}
 
-	fn create_tls_connection(path: &str) -> Result<MakeTlsConnector, AppError> {
-		let cert_path = fs::read(path)?;
-		// .unwrap_or_else(|_| panic!("Failed to read the cert file from path: {}", path));
+	fn create_tls_connection(ca_cert: &str) -> Result<MakeRustlsConnect, AppError> {
+		let mut config = rustls::ClientConfig::new();
+		let cert_file = fs::File::open(ca_cert)?;
+		let mut buf = BufReader::new(cert_file);
+		config
+			.root_store
+			.add_pem_file(&mut buf)
+			.map_err(|_| AppError::FailedDBCertRead)?;
 
-		let cert = Certificate::from_pem(&cert_path)?;
-		// .unwrap_or_else(|_| panic!("Failed to create the certificate from path: {}", path));
-
-		let connector = TlsConnector::builder()
-			.add_root_certificate(cert)
-			.build()
-			.expect("Failed to create a tls connector for Postgres");
-
-		Ok(MakeTlsConnector::new(connector))
+		let tls = tokio_postgres_rustls::MakeRustlsConnect::new(config);
+		Ok(tls)
 	}
 
 	/// Get current count of rows in the database.
