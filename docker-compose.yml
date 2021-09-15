@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   redpanda:
-    image: redpanda:latest
+    image: vectorized/redpanda:latest
     container_name: redpanda-c
     ports: 
       - "9092:9092"
