@@ -16,39 +16,33 @@ name = "kafka-rust-example"
 path = "src/main.rs"
 
 [build-dependencies]
-[build-dependencies.prost-build]
-version = "0.8.0"
+prost-build = "0.8.0"
 
 [dependencies]
-anyhow = "1.0"
-deadpool-postgres = "0.9"
+anyhow = "1.0.44"
+deadpool-postgres = "0.9.0"
 dotenv = "0.15.0"
-env_logger = "0.9"
-envy = "0.4"
-log = "0.4"
-serde = "1.0"
-serde_json = "1.0"
-structopt = "0.3"
-sysinfo = "*"
-thiserror = "1.0"
-postgres-native-tls ={ version = "0.5"}
-native-tls = "*"
+env_logger = "0.9.0"
+envy = "0.4.2"
+log = "0.4.14"
+serde = "1.0.130"
+serde_json = "1.0.67"
+structopt = "0.3.23"
+sysinfo = "0.20.3"
+thiserror = "1.0.29"
+postgres-native-tls = "0.5.0"
+native-tls = "0.2.8"
 # openssl = { version = "0.10", features = ["vendored"] }
-uuid = { version = "0.8", features = ["v4"] }
-#sqlx = { version = "0.4", features = [ "postgres", "runtime-tokio-rustls" ] }
-
-[dependencies.prost]
-version = "0.8"
+uuid = { version = "0.8.2", features = ["v4"] }
+prost = "0.8.0"
+futures = "0.3.17"
 # git = "https://github.com/danburkert/prost"
 # rev = "423f5ec5bd165a7007a388edfb2b485d5bbf40c7"
 
 
 [dependencies.chrono]
 features = ["serde"]
-version = "0.4"
-
-[dependencies.futures]
-version = "0.3"
+version = "0.4.19"
 
 [dependencies.rdkafka]
 features = ["cmake-build", "gssapi", "ssl", "tokio"]
@@ -58,8 +52,8 @@ version = "0.26.0"
 
 [dependencies.tokio]
 features = ["rt-multi-thread", "macros", "io-util"]
-version = "1.5"
+version = "1.11.0"
 
 [dependencies.tokio-postgres]
 features = ["with-chrono-0_4"]
-version = "0.7.0"
+version = "0.7.2"

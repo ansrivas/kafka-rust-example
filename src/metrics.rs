@@ -65,11 +65,11 @@ impl MetricsGenerator {
 	/// ```
 	pub fn disk_stats(&self) -> Vec<Message> {
 		let mut messages = vec![];
-		for (idx, disk) in self.client.get_disks().iter().enumerate() {
+		for (idx, disk) in self.client.disks().iter().enumerate() {
 			let _metrics_name = format!("disk-available-space-{idx}", idx = idx);
 			let metrics = Self::create_metrics(
-				disk.get_name().to_os_string().into_string().unwrap(),
-				disk.get_available_space() as f32,
+				disk.name().to_os_string().into_string().unwrap(),
+				disk.available_space() as f32,
 				None,
 			);
 			messages.push(metrics);
@@ -90,7 +90,7 @@ impl MetricsGenerator {
 		let mut messages = vec![];
 		let message = Self::create_metrics(
 			"used-memory".to_string(),
-			self.client.get_used_memory() as f32,
+			self.client.used_memory() as f32,
 			None,
 		);
 		messages.push(message);
