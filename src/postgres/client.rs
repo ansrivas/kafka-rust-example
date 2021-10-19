@@ -55,7 +55,10 @@ impl DbClient {
 		cfg.password(password);
 		cfg.dbname(dbname);
 		let mgr = Manager::new(cfg, tokio_postgres::NoTls);
-		let connection_pool = Pool::new(mgr, 16);
+		let connection_pool = Pool::builder(mgr)
+			.max_size(16)
+			.build()
+			.expect("Failed to create a pool");
 		DbClient {
 			pool: connection_pool,
 		}
@@ -79,10 +82,10 @@ impl DbClient {
 		let pool = if let Some(cert_path) = cert_path {
 			let connector = DbClient::create_tls_connection(cert_path)?;
 			let mgr = Manager::new(config, connector);
-			Pool::new(mgr, 16)
+			Pool::builder(mgr).max_size(16).build()?
 		} else {
 			let mgr = Manager::new(config, tokio_postgres::NoTls);
-			Pool::new(mgr, 16)
+			Pool::builder(mgr).max_size(16).build()?
 		};
 
 		Ok(DbClient { pool })
