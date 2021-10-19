@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+use deadpool_postgres::BuildError;
 use deadpool_postgres::PoolError;
 use std::io;
 use thiserror::Error;
@@ -30,6 +31,10 @@ use thiserror::Error;
 pub enum AppError {
 	#[error("Failed to get a db-connection from database pool")]
 	PoolConnError(#[from] PoolError),
+
+	#[error("Failed to build a db-connection pool")]
+	PoolBuildError(#[from] BuildError),
+
 	#[error("Failed to get a db-connection from internal tokio postgres")]
 	TokioConnError(#[from] tokio_postgres::Error),
 

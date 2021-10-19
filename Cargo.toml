@@ -57,3 +57,7 @@ version = "1.11.0"
 [dependencies.tokio-postgres]
 features = ["with-chrono-0_4"]
 version = "0.7.2"
+
+
+[dev-dependencies]
+rusty-hook = "^0.11.2"
