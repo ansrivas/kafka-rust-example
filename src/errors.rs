@@ -43,4 +43,10 @@ pub enum AppError {
 
 	#[error(transparent)]
 	TlsError(#[from] native_tls::Error),
+
+	#[error(transparent)]
+	DecodeError(#[from] prost::DecodeError),
+
+	#[error("{0}")]
+	CustomErr(String),
 }

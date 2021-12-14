@@ -1,9 +1,11 @@
-#[derive(Clone, PartialEq, ::prost::Message)]
+use serde::Serialize;
+
+#[derive(Clone, PartialEq, ::prost::Message, Serialize)]
 pub struct BatchMessage {
 	#[prost(message, repeated, tag = "3")]
 	pub multiple_points: ::prost::alloc::vec::Vec<Message>,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, Serialize)]
 pub struct Message {
 	#[prost(int64, tag = "1")]
 	pub timestamp: i64,

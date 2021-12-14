@@ -31,7 +31,7 @@ use native_tls::{Certificate, TlsConnector};
 use postgres_native_tls::MakeTlsConnector;
 use std::fs;
 use tokio_postgres::Config;
-
+#[derive(Clone)]
 pub struct DbClient {
 	pool: Pool,
 }

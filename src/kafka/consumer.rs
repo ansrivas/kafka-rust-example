@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use futures::StreamExt;
+use futures_util::StreamExt;
 use log::{debug, error, warn};
 
 use prost::bytes::BytesMut;

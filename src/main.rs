@@ -20,18 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+mod agents;
 pub mod config;
 mod errors;
 pub mod generated;
 pub mod kafka;
 pub mod metrics;
 pub mod postgres;
-
 use prost::bytes::BytesMut;
 
 use config::Config;
 use uuid::Uuid;
 
+use agents::{Agent, MetricsWriter};
 use generated::BatchMessage;
 use kafka::{KafkaConsumer, KafkaProducer};
 use log::{debug, error, info};
@@ -160,19 +161,16 @@ fn create_producer(conf: Arc<Config>) -> KafkaProducer {
 /// published to an internal channel.
 /// Then this data is read and published to postgres.
 async fn handle_message_receiving(config: Arc<Config>, dbclient: DbClient) {
-	let (dbtx, mut dbrx) = mpsc::channel(100);
+	let (dbtx, mut dbrx) = mpsc::channel::<BytesMut>(1000);
+	// let agents: &[Box<dyn Agent>] = &[Box::new(MetricsWriter::new(dbclient.clone()))];
+	// for agent in agents {
+	// 	agent.run(&raw_data[..]).await;
+	// }
+	let agent = MetricsWriter::new(dbclient.clone());
 	task::spawn(async move {
 		info!("Waiting to receive metrics-data on incoming queue.");
 		while let Some(raw_data) = dbrx.recv().await {
-			debug!("Received data on the incoming channel to write in database");
-			if let Ok(bmsg) = BatchMessage::decode(raw_data) {
-				if let Err(e) = dbclient.insert(&bmsg).await {
-					error!("Failed to write data to the db: {:?}", e);
-					let _ = dbclient.insert(&bmsg).await;
-				}
-			} else {
-				error!("Failed to decode the incoming message from kafka");
-			};
+			agent.run(&raw_data[..]).await;
 		}
 	});
 
@@ -190,14 +188,14 @@ async fn handle_message_receiving(config: Arc<Config>, dbclient: DbClient) {
 /// by a kafka producer to publish this message to a kafka-topic.
 async fn handle_message_publishing(config: Arc<Config>) {
 	// Create a mpsc channel to publish data to
-	let (tx, mut rx) = mpsc::channel(100);
+	let (tx, mut rx) = mpsc::channel(1000);
 	let mut batch_messages = BatchMessage::default();
 
 	// Spawn an async task to collect metrics
 	task::spawn(async move {
 		debug!("Starting to produce the data");
 
-		let mut interval = time::interval(Duration::from_millis(1000));
+		let mut interval = time::interval(Duration::from_millis(1));
 		loop {
 			interval.tick().await;
 			// This is in its own scope so that it gets collected and
@@ -260,6 +258,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 		}
 		Command::MetricsSubscriber => {
 			info!("Subscriber was invoked");
+
 			handle_message_receiving(app_config.clone(), dbclient).await
 		}
 		Command::CheckDbData => {
