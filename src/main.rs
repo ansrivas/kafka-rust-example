@@ -161,23 +161,22 @@ fn create_producer(conf: Arc<Config>) -> KafkaProducer {
 /// published to an internal channel.
 /// Then this data is read and published to postgres.
 async fn handle_message_receiving(config: Arc<Config>, dbclient: DbClient) {
-	let (dbtx, mut dbrx) = mpsc::channel::<BytesMut>(1000);
-	// let agents: &[Box<dyn Agent>] = &[Box::new(MetricsWriter::new(dbclient.clone()))];
-	// for agent in agents {
-	// 	agent.run(&raw_data[..]).await;
-	// }
-	let agent = MetricsWriter::new(dbclient.clone());
-	task::spawn(async move {
-		info!("Waiting to receive metrics-data on incoming queue.");
-		while let Some(raw_data) = dbrx.recv().await {
-			agent.run(&raw_data[..]).await;
-		}
-	});
+	let mut agents = Vec::new();
+	agents.push(Box::new(MetricsWriter::new(dbclient.clone(), "")));
+	agents.push(Box::new(MetricsWriter::new(dbclient.clone(), "ankur")));
 
-	debug!("Starting to cosume the data");
-	let conf = config.clone();
-	let kconsumer = create_consumer(conf);
-	kconsumer.consume(dbtx).await;
+	let mut handles = vec![];
+	for agent in agents {
+		let conf = config.clone();
+		let handle = task::spawn(async move {
+			info!("Waiting to receive metrics-data on incoming queue.");
+			debug!("Starting to cosume the data");
+			let kconsumer = create_consumer(conf);
+			kconsumer.consume(&*agent).await;
+		});
+		handles.push(handle);
+	}
+	futures_util::future::join_all(handles).await;
 }
 
 /// Handle the message publishing command.

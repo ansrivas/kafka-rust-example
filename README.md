@@ -67,15 +67,15 @@ The default configuration is in `config/env.dev`.
 - After building the project (`cargo build`), you will find a binary inside `target/debug/kafka-rust-example`
 - Run the publisher as:
   ```
-  RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/debug/kafka-rust-example metrics-publisher
+  RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/release/kafka-rust-example metrics-publisher
   ```
 - Run the subscriber as:
   ```
-  RUST_LOG=debug APPLICATION_CONFIG_PATH=./config/env.dev ./target/debug/kafka-rust-example metrics-subscriber
+  RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/release/kafka-rust-example metrics-subscriber
   ```
 - Check rows in DB:
   ```
-  RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/debug/kafka-rust-example check-db-data
+  RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/release/kafka-rust-example check-db-data
   ```
 
 ## License

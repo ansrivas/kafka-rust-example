@@ -23,6 +23,7 @@
 use futures_util::StreamExt;
 use log::{debug, error, warn};
 
+use crate::agents::Agent;
 use prost::bytes::BytesMut;
 
 use rdkafka::{
@@ -79,7 +80,11 @@ impl KafkaConsumer {
 	/// Consume the incoming topic and publishes the raw-payload to an internal
 	/// mpsc channel to be consumed by another async-task which then writes the
 	/// data to postgres.
-	pub async fn consume(&self, sender_tx: mpsc::Sender<BytesMut>) {
+	// pub async fn consume(&self, sender_tx: mpsc::Sender<BytesMut>) {
+	pub async fn consume<T>(&self, agent: &T)
+	where
+		T: Agent,
+	{
 		debug!("initiating data consumption from kafka-topic");
 
 		let mut message_stream = self.kafka_consumer.stream();
@@ -93,12 +98,9 @@ impl KafkaConsumer {
 							&raw_data,
 							m.offset()
 						);
-						let payload = BytesMut::from(raw_data);
-						if let Err(e) = &sender_tx.send(payload).await {
-							error!("receiver dropped: {:?}", e);
+						if let Err(e) = agent.run(&raw_data[..]).await {
+							error!("agent dropped: {:?}", e);
 						}
-					} else {
-						warn!("Failed to read raw data from kafka topic")
 					}
 
 					if let Err(e) = self.kafka_consumer.commit_message(&m, CommitMode::Async) {

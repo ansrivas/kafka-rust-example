@@ -70,9 +70,9 @@ build_release: test install_sccache cross ## Create a release build
 .PHONY: migrations
 migrations:  ## Run migrations
 	sqlx database reset -y
-	# sqlx database drop
-	# sqlx database create
-	# sqlx migrate run
+	sqlx database drop
+	sqlx database create
+	sqlx migrate run
 
 .PHONY : lint
 lint: ## Run tests, fmt and clippy on this

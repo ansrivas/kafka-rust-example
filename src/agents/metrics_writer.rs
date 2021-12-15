@@ -8,12 +8,16 @@ use prost::Message as PMessage;
 
 pub struct MetricsWriter {
 	pub dbclient: DbClient,
+	pub topic: String,
 }
 
 impl MetricsWriter {
 	/// Create a new instance of MetricsWriter
-	pub fn new(dbclient: DbClient) -> Self {
-		Self { dbclient }
+	pub fn new<T: Into<String>>(dbclient: DbClient, topic: T) -> Self {
+		Self {
+			dbclient,
+			topic: topic.into(),
+		}
 	}
 
 	async fn metrics_writer(&self, payload: &BatchMessage) -> Result<(), AppError> {
@@ -40,6 +44,15 @@ impl Agent for MetricsWriter {
 			Payload::BatchMessage(batch_message) => batch_message,
 			_ => return Err(AppError::CustomErr("Unsupported message received".into())),
 		};
-		self.metrics_writer(&batch_message).await
+		if self.topic == "ankur" {
+			log::info!("Should have written");
+		} else {
+			self.metrics_writer(&batch_message).await?;
+		}
+		Ok(())
+	}
+
+	fn topic(&self) -> String {
+		self.topic.clone()
 	}
 }

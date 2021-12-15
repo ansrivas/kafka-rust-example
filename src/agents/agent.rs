@@ -7,7 +7,8 @@ pub enum Payload {
 }
 
 #[async_trait]
-pub trait Agent {
+pub trait Agent: Sync + Send {
 	fn validate(&self, raw_data: &[u8]) -> Result<Payload, AppError>;
 	async fn run(&self, raw_data: &[u8]) -> Result<(), AppError>;
+	fn topic(&self) -> String;
 }
