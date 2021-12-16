@@ -81,10 +81,7 @@ impl KafkaConsumer {
 	/// mpsc channel to be consumed by another async-task which then writes the
 	/// data to postgres.
 	// pub async fn consume(&self, sender_tx: mpsc::Sender<BytesMut>) {
-	pub async fn consume<T>(&self, agent: &T)
-	where
-		T: Agent,
-	{
+	pub async fn consume(&self, agent: &dyn Agent) {
 		debug!("initiating data consumption from kafka-topic");
 
 		let mut message_stream = self.kafka_consumer.stream();

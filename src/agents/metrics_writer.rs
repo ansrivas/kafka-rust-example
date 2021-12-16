@@ -3,7 +3,7 @@ use crate::errors::AppError;
 use crate::generated::BatchMessage;
 use crate::postgres::DbClient;
 use async_trait::async_trait;
-use log::{debug, error, info};
+use log::{error, info};
 use prost::Message as PMessage;
 
 pub struct MetricsWriter {
@@ -22,7 +22,6 @@ impl MetricsWriter {
 
 	async fn metrics_writer(&self, payload: &BatchMessage) -> Result<(), AppError> {
 		info!("Waiting to receive metrics-data on incoming queue.");
-		debug!("Received data on the incoming channel to write in database");
 		if let Err(e) = self.dbclient.insert(payload).await {
 			error!("Failed to write data to the db: {:?}", e);
 			let _ = self.dbclient.insert(payload).await;
@@ -52,7 +51,7 @@ impl Agent for MetricsWriter {
 		Ok(())
 	}
 
-	fn topic(&self) -> String {
-		self.topic.clone()
+	fn topic(&self) -> &str {
+		self.topic.as_ref()
 	}
 }

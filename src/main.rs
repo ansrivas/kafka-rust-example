@@ -160,11 +160,7 @@ fn create_producer(conf: Arc<Config>) -> KafkaProducer {
 /// Then the incoming message is deserialized back to BatchMessage and
 /// published to an internal channel.
 /// Then this data is read and published to postgres.
-async fn handle_message_receiving(config: Arc<Config>, dbclient: DbClient) {
-	let mut agents = Vec::new();
-	agents.push(Box::new(MetricsWriter::new(dbclient.clone(), "")));
-	agents.push(Box::new(MetricsWriter::new(dbclient.clone(), "ankur")));
-
+async fn handle_message_receiving(agents: Vec<Box<dyn Agent>>, config: Arc<Config>) {
 	let mut handles = vec![];
 	for agent in agents {
 		let conf = config.clone();
@@ -257,8 +253,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 		}
 		Command::MetricsSubscriber => {
 			info!("Subscriber was invoked");
+			let agent1 = Box::new(MetricsWriter::new(dbclient.clone(), ""));
+			let agent2 = Box::new(MetricsWriter::new(dbclient.clone(), "ankur"));
+			let agents: Vec<Box<dyn Agent>> = vec![agent1, agent2];
 
-			handle_message_receiving(app_config.clone(), dbclient).await
+			handle_message_receiving(agents, app_config.clone()).await
 		}
 		Command::CheckDbData => {
 			let rows = dbclient.get_count().await?;
