@@ -3,11 +3,12 @@ services:
   redpanda:
     image: vectorized/redpanda:latest
     container_name: redpanda-c
-    ports: 
+    ports:
       - "9092:9092"
     restart: always
-    command: redpanda start --overprovisioned --smp 1 --memory 1G --reserve-memory 0M --node-id 0 --check=false
-  
+    command: redpanda start --overprovisioned --smp 1 --memory 1G --reserve-memory
+      0M --node-id 0 --check=false
+
   postgres-db:
     image: timescale/timescaledb:latest-pg11
     container_name: postgres-db

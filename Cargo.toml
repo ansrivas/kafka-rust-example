@@ -35,10 +35,13 @@ thiserror = "1.0"
 # openssl = { version = "0.10", features = ["vendored"] }
 futures-util = "0.3.17"
 prost = "0.9"
-uuid = {version = "0.8", features = ["v4"]}
+uuid = { version = "0.8", features = ["v4"] }
 # git = "https://github.com/danburkert/prost"
 # rev = "423f5ec5bd165a7007a388edfb2b485d5bbf40c7"
 async-trait = "0.1.52"
+
+comfy-table = "5.0.0"
+
 
 [dependencies.chrono]
 features = ["serde"]

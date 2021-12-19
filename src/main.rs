@@ -47,6 +47,8 @@ use std::sync::Arc;
 use structopt::{clap::Shell, StructOpt};
 use tokio::{self, sync::mpsc, task, time, time::Duration};
 
+use crate::agents::StdOutWriter;
+
 #[derive(Debug, StructOpt)]
 pub enum Command {
 	#[structopt(name = "metrics-publisher")]
@@ -72,7 +74,7 @@ pub struct Metrics {
 ///
 /// In case certificate path etc is provided then a sasl enabled client
 /// is created else a normal client.
-fn create_consumer(conf: Arc<Config>) -> KafkaConsumer {
+fn create_consumer(conf: Arc<Config>, consumer_group: &str, topic: &str) -> KafkaConsumer {
 	let is_tls = conf.kafka_ca_cert_path.is_some()
 		&& conf.kafka_password.is_some()
 		&& conf.kafka_username.is_some();
@@ -92,7 +94,6 @@ fn create_consumer(conf: Arc<Config>) -> KafkaConsumer {
 			.as_deref()
 			.expect("Kafka ca certificate is required.");
 		let consumer: StreamConsumer = ClientConfig::new()
-			.set("group.id", "some-random-id")
 			.set("bootstrap.servers", &conf.kafka_brokers)
 			.set("enable.partition.eof", "false")
 			.set("session.timeout.ms", "6000")
@@ -105,15 +106,11 @@ fn create_consumer(conf: Arc<Config>) -> KafkaConsumer {
 			.set_log_level(RDKafkaLogLevel::Debug)
 			.create()
 			.expect("Consumer creation failed");
-		return KafkaConsumer::new_with_consumer(consumer, &[&conf.kafka_topic]);
+		return KafkaConsumer::new_with_consumer(consumer, &[topic]);
 	}
 
-	let group_id = Uuid::new_v4();
-	KafkaConsumer::new(
-		&conf.kafka_brokers,
-		&group_id.to_string(),
-		&[&conf.kafka_topic],
-	)
+	// let group_id = Uuid::new_v4();
+	KafkaConsumer::new(&conf.kafka_brokers, consumer_group, &[topic])
 }
 
 /// Create a producer based on the given configuration.
@@ -154,6 +151,21 @@ fn create_producer(conf: Arc<Config>) -> KafkaProducer {
 	KafkaProducer::new(&conf.kafka_brokers)
 }
 
+use comfy_table::Table;
+pub fn render(agents: &Vec<Box<dyn Agent>>) {
+	let mut table = Table::new();
+	table.set_header(vec!["Name", "Concurrency", "Topic", "ConsumerGroup"]);
+	for agent in agents.iter() {
+		table.add_row(vec![
+			agent.name(),
+			agent.concurrency().to_string().as_ref(),
+			agent.topic(),
+			agent.consumer_group(),
+		]);
+	}
+	println!("{}", table);
+}
+
 /// Handle the message subscription command.
 ///
 /// This will subscribe to a kafka-topic on which metrics are being published.
@@ -162,15 +174,20 @@ fn create_producer(conf: Arc<Config>) -> KafkaProducer {
 /// Then this data is read and published to postgres.
 async fn handle_message_receiving(agents: Vec<Box<dyn Agent>>, config: Arc<Config>) {
 	let mut handles = vec![];
+
+	render(&agents);
 	for agent in agents {
-		let conf = config.clone();
-		let handle = task::spawn(async move {
-			info!("Waiting to receive metrics-data on incoming queue.");
-			debug!("Starting to cosume the data");
-			let kconsumer = create_consumer(conf);
-			kconsumer.consume(&*agent).await;
-		});
-		handles.push(handle);
+		let concurrency = agent.concurrency();
+		for _c in 0..concurrency {
+			let a = agent.clone();
+			let conf = config.clone();
+			let handle = task::spawn(async move {
+				info!("Spawned {}", a.name());
+				let kconsumer = create_consumer(conf, a.consumer_group(), a.topic());
+				kconsumer.consume(&*a).await;
+			});
+			handles.push(handle);
+		}
 	}
 	futures_util::future::join_all(handles).await;
 }
@@ -190,7 +207,7 @@ async fn handle_message_publishing(config: Arc<Config>) {
 	task::spawn(async move {
 		debug!("Starting to produce the data");
 
-		let mut interval = time::interval(Duration::from_millis(1));
+		let mut interval = time::interval(Duration::from_millis(2000));
 		loop {
 			interval.tick().await;
 			// This is in its own scope so that it gets collected and
@@ -253,8 +270,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 		}
 		Command::MetricsSubscriber => {
 			info!("Subscriber was invoked");
-			let agent1 = Box::new(MetricsWriter::new(dbclient.clone(), ""));
-			let agent2 = Box::new(MetricsWriter::new(dbclient.clone(), "ankur"));
+			let agent1 = Box::new(MetricsWriter::new(dbclient.clone(), "metrics"));
+			let agent2 = Box::new(StdOutWriter::new(Duration::from_millis(1000), "ankur"));
 			let agents: Vec<Box<dyn Agent>> = vec![agent1, agent2];
 
 			handle_message_receiving(agents, app_config.clone()).await

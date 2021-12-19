@@ -6,6 +6,7 @@ use async_trait::async_trait;
 use log::{error, info};
 use prost::Message as PMessage;
 
+#[derive(Clone)]
 pub struct MetricsWriter {
 	pub dbclient: DbClient,
 	pub topic: String,
@@ -43,15 +44,20 @@ impl Agent for MetricsWriter {
 			Payload::BatchMessage(batch_message) => batch_message,
 			_ => return Err(AppError::CustomErr("Unsupported message received".into())),
 		};
-		if self.topic == "ankur" {
-			log::info!("Should have written");
-		} else {
-			self.metrics_writer(&batch_message).await?;
-		}
+
+		self.metrics_writer(&batch_message).await?;
 		Ok(())
 	}
 
 	fn topic(&self) -> &str {
 		self.topic.as_ref()
+	}
+
+	fn name(&self) -> &str {
+		"MetricsWriter"
+	}
+
+	fn consumer_group(&self) -> &str {
+		"MetricsWriter"
 	}
 }

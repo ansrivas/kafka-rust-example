@@ -21,10 +21,9 @@
 // SOFTWARE.
 
 use futures_util::StreamExt;
-use log::{debug, error, warn};
+use log::{debug, error, info, warn};
 
 use crate::agents::Agent;
-use prost::bytes::BytesMut;
 
 use rdkafka::{
 	config::{ClientConfig, RDKafkaLogLevel},
@@ -90,7 +89,7 @@ impl KafkaConsumer {
 				Err(e) => warn!("Kafka error: {}", e),
 				Ok(m) => {
 					if let Some(raw_data) = m.payload() {
-						debug!(
+						info!(
 							"Received message on Kafka {:?} on offset {:?}",
 							&raw_data,
 							m.offset()
