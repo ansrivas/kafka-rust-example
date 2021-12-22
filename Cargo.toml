@@ -41,7 +41,8 @@ uuid = { version = "0.8", features = ["v4"] }
 async-trait = "0.1.52"
 
 comfy-table = "5.0.0"
-
+parquet = "6.4.0"
+futures-batch = "0.6.0"
 
 [dependencies.chrono]
 features = ["serde"]

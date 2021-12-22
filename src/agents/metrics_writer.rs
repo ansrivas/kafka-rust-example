@@ -3,7 +3,7 @@ use crate::errors::AppError;
 use crate::generated::BatchMessage;
 use crate::postgres::DbClient;
 use async_trait::async_trait;
-use log::{error, info};
+use log::{debug, error, info};
 use prost::Message as PMessage;
 
 #[derive(Clone)]
@@ -11,6 +11,19 @@ pub struct MetricsWriter {
 	pub dbclient: DbClient,
 	pub topic: String,
 }
+
+use parquet::file::writer::{FileWriter, SerializedFileWriter};
+use std::fs::File;
+use std::path::Path;
+
+// fn write() {
+// 	let file = File::open(&Path::new("/path/to/file")).unwrap();
+// 	let reader = SerializedFileReader::new(file).unwrap();
+// 	let mut iter = reader.get_row_iter(None).unwrap();
+// 	while let Some(record) = iter.next() {
+// 		println!("{}", record);
+// 	}
+// }
 
 impl MetricsWriter {
 	/// Create a new instance of MetricsWriter
@@ -22,7 +35,7 @@ impl MetricsWriter {
 	}
 
 	async fn metrics_writer(&self, payload: &BatchMessage) -> Result<(), AppError> {
-		info!("Waiting to receive metrics-data on incoming queue.");
+		debug!("Waiting to receive metrics-data on incoming queue.");
 		if let Err(e) = self.dbclient.insert(payload).await {
 			error!("Failed to write data to the db: {:?}", e);
 			let _ = self.dbclient.insert(payload).await;

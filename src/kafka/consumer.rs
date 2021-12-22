@@ -20,8 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use futures_util::StreamExt;
+use futures_batch::ChunksTimeoutStreamExt;
+use futures_util::{stream, StreamExt};
 use log::{debug, error, info, warn};
+use std::time::Duration;
 
 use crate::agents::Agent;
 
@@ -83,27 +85,31 @@ impl KafkaConsumer {
 	pub async fn consume(&self, agent: &dyn Agent) {
 		debug!("initiating data consumption from kafka-topic");
 
-		let mut message_stream = self.kafka_consumer.stream();
-		while let Some(message) = message_stream.next().await {
-			match message {
-				Err(e) => warn!("Kafka error: {}", e),
-				Ok(m) => {
-					if let Some(raw_data) = m.payload() {
-						info!(
-							"Received message on Kafka {:?} on offset {:?}",
-							&raw_data,
-							m.offset()
-						);
-						if let Err(e) = agent.run(&raw_data[..]).await {
-							error!("agent dropped: {:?}", e);
+		while let Some(messages) = self
+			.kafka_consumer
+			.stream()
+			.chunks_timeout(5, Duration::new(10, 0))
+			.next()
+			.await
+		{
+			info!("Length of batch received {}", messages.len());
+			for message in messages.iter() {
+				match message {
+					Err(e) => warn!("Kafka error: {}", e),
+					Ok(m) => {
+						if let Some(raw_data) = m.payload() {
+							info!("Received message on Kafka on offset {:?}", m.offset());
+							if let Err(e) = agent.run(&raw_data[..]).await {
+								error!("agent dropped: {:?}", e);
+							}
+						}
+
+						if let Err(e) = self.kafka_consumer.commit_message(&m, CommitMode::Async) {
+							error!("Failed to commit offset to kafka: {:?}", e);
 						}
 					}
-
-					if let Err(e) = self.kafka_consumer.commit_message(&m, CommitMode::Async) {
-						error!("Failed to commit offset to kafka: {:?}", e);
-					}
-				}
-			};
+				};
+			}
 		}
 		debug!("Returned from consumer");
 	}

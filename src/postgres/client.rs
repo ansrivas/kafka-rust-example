@@ -26,7 +26,7 @@ use crate::{
 };
 use chrono::prelude::*;
 use deadpool_postgres::{Manager, Pool};
-use log::info;
+use log::{debug, info};
 use native_tls::{Certificate, TlsConnector};
 use postgres_native_tls::MakeTlsConnector;
 use std::fs;
@@ -150,7 +150,7 @@ impl DbClient {
 				.execute(&stmt, &[&ts, &message.name, &(message.value as f64)])
 				.await?;
 		}
-		info!("Published data to db");
+		debug!("Published data to db");
 		Ok(())
 	}
 
