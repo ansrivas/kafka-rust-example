@@ -109,7 +109,6 @@ fn create_consumer(conf: Arc<Config>, consumer_group: &str, topic: &str) -> Kafk
 		return KafkaConsumer::new_with_consumer(consumer, &[topic]);
 	}
 
-	// let group_id = Uuid::new_v4();
 	KafkaConsumer::new(&conf.kafka_brokers, consumer_group, &[topic])
 }
 

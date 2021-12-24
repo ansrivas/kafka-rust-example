@@ -81,7 +81,6 @@ impl KafkaConsumer {
 	/// Consume the incoming topic and publishes the raw-payload to an internal
 	/// mpsc channel to be consumed by another async-task which then writes the
 	/// data to postgres.
-	// pub async fn consume(&self, sender_tx: mpsc::Sender<BytesMut>) {
 	pub async fn consume(&self, agent: &dyn Agent) {
 		debug!("initiating data consumption from kafka-topic");
 
