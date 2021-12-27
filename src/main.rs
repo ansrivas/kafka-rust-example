@@ -234,14 +234,16 @@ async fn handle_message_publishing(config: Arc<Config>) {
 	// Create a kafka producer
 	let kproducer = create_producer(conf);
 
+	let mut counter = 0;
 	// Start reading data in the main thread
 	// and publish it to Kafka
 	while let Some(data) = rx.recv().await {
 		debug!("Received data on the incoming channel");
+		counter += 1;
 		kproducer.produce(data, &config.kafka_topic).await;
 		info!(
-			"Published data successfully on kafka topic: {}",
-			&config.kafka_topic
+			"Published on kafka topic: {} msg_count {}",
+			&config.kafka_topic, counter
 		);
 	}
 }
