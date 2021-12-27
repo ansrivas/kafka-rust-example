@@ -30,7 +30,6 @@ pub mod postgres;
 use prost::bytes::BytesMut;
 
 use config::Config;
-use uuid::Uuid;
 
 use agents::{Agent, MetricsWriter};
 use generated::BatchMessage;

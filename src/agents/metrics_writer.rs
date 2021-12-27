@@ -3,7 +3,7 @@ use crate::errors::AppError;
 use crate::generated::BatchMessage;
 use crate::postgres::DbClient;
 use async_trait::async_trait;
-use log::{debug, error, info};
+use log::{debug, error};
 use prost::Message as PMessage;
 
 #[derive(Clone)]
@@ -12,9 +12,9 @@ pub struct MetricsWriter {
 	pub topic: String,
 }
 
-use parquet::file::writer::{FileWriter, SerializedFileWriter};
-use std::fs::File;
-use std::path::Path;
+// use parquet::file::writer::{FileWriter, SerializedFileWriter};
+// use std::fs::File;
+// use std::path::Path;
 
 // fn write() {
 // 	let file = File::open(&Path::new("/path/to/file")).unwrap();

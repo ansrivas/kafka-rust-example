@@ -25,12 +25,12 @@ dotenv = "0.15.0"
 env_logger = "0.9.0"
 envy = "0.4.2"
 log = "0.4.14"
-structopt = "0.3.23"
-sysinfo = "0.22.3"
 native-tls = "0.2.8"
 postgres-native-tls = "0.5.0"
 serde = "1.0"
 serde_json = "1.0"
+structopt = "0.3.23"
+sysinfo = "0.22.3"
 thiserror = "1.0"
 # openssl = { version = "0.10", features = ["vendored"] }
 futures-util = "0.3.17"
@@ -41,8 +41,8 @@ uuid = { version = "0.8", features = ["v4"] }
 async-trait = "0.1.52"
 
 comfy-table = "5.0.0"
-parquet = "6.4.0"
 futures-batch = "0.6.0"
+parquet = "6.4.0"
 
 [dependencies.chrono]
 features = ["serde"]

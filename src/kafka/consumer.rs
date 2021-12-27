@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 use futures_batch::ChunksTimeoutStreamExt;
-use futures_util::{stream, StreamExt};
+use futures_util::StreamExt;
 use log::{debug, error, info, warn};
 use std::time::Duration;
 
@@ -32,7 +32,6 @@ use rdkafka::{
 	consumer::{stream_consumer::StreamConsumer, CommitMode, Consumer},
 	message::Message,
 };
-use tokio::{self, sync::mpsc};
 
 pub struct KafkaConsumer {
 	kafka_consumer: StreamConsumer,
@@ -97,7 +96,11 @@ impl KafkaConsumer {
 					Err(e) => warn!("Kafka error: {}", e),
 					Ok(m) => {
 						if let Some(raw_data) = m.payload() {
-							info!("Received message on Kafka on offset {:?}", m.offset());
+							info!(
+								"Received message offset {:?} partition {:?} ",
+								m.offset(),
+								m.partition()
+							);
 							if let Err(e) = agent.run(&raw_data[..]).await {
 								error!("agent dropped: {:?}", e);
 							}

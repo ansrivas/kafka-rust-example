@@ -50,7 +50,7 @@ The default configuration is in `config/env.dev`.
 - For local development please run `docker-compose up -d`
 - This will launch a bunch of docker containers locally, check it by running `docker ps`
 
-  ```
+  ```bash
   $ docker ps
   docker ps
   CONTAINER ID        IMAGE                               COMMAND                  PORTS                      NAMES
@@ -61,20 +61,33 @@ The default configuration is in `config/env.dev`.
   ```
 
 - Run the migration using ( ensure you have `cargo install sqlx-cli`)
-  ```
+
+  ```bash
    make migrations
   ```
-- After building the project (`cargo build`), you will find a binary inside `target/debug/kafka-rust-example`
-- Run the publisher as:
+
+- After building the project (`cargo build`), you will find a binary inside `target/release/kafka-rust-example`
+- Create a topic with 3 partitions
+
+  ```bash
+  docker exec -it redpanda-c rpk topic create -p 3 metrics --brokers=localhost:9092
   ```
+  
+- Run the publisher as:
+
+  ```bash
   RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/release/kafka-rust-example metrics-publisher
   ```
+
 - Run the subscriber as:
-  ```
+
+  ```bash
   RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/release/kafka-rust-example metrics-subscriber
   ```
+
 - Check rows in DB:
-  ```
+
+  ```bash
   RUST_LOG=info APPLICATION_CONFIG_PATH=./config/env.dev ./target/release/kafka-rust-example check-db-data
   ```
 
