@@ -58,7 +58,7 @@ impl KafkaConsumer {
 			.expect("Consumer creation failed");
 
 		consumer
-			.subscribe(&topics.to_vec())
+			.subscribe(topics)
 			.expect("Failed to subscribe to specified topics");
 
 		KafkaConsumer {
@@ -68,7 +68,7 @@ impl KafkaConsumer {
 
 	pub fn new_with_consumer(consumer: StreamConsumer, topics: &[&str]) -> KafkaConsumer {
 		consumer
-			.subscribe(&topics.to_vec())
+			.subscribe(topics)
 			.expect("Failed to subscribe to specified topics");
 
 		KafkaConsumer {
