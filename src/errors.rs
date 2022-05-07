@@ -30,17 +30,17 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum AppError {
 	#[error("Failed to get a db-connection from database pool")]
-	PoolConnError(#[from] PoolError),
+	PoolConn(#[from] PoolError),
 
 	#[error("Failed to build a db-connection pool")]
-	PoolBuildError(#[from] BuildError),
+	PoolBuild(#[from] BuildError),
 
 	#[error("Failed to get a db-connection from internal tokio postgres")]
-	TokioConnError(#[from] tokio_postgres::Error),
+	TokioConn(#[from] tokio_postgres::Error),
 
 	#[error(transparent)]
-	IoError(#[from] io::Error),
+	Io(#[from] io::Error),
 
 	#[error(transparent)]
-	TlsError(#[from] native_tls::Error),
+	Tls(#[from] native_tls::Error),
 }
