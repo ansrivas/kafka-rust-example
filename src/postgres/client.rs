@@ -144,8 +144,10 @@ impl DbClient {
 			.await?;
 
 		for message in messages.multiple_points.iter() {
-			let ts =
-				DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp_opt(message.timestamp, 0).unwrap(), Utc);
+			let ts = DateTime::<Utc>::from_utc(
+				NaiveDateTime::from_timestamp_opt(message.timestamp, 0).unwrap(),
+				Utc,
+			);
 			client
 				.execute(&stmt, &[&ts, &message.name, &(message.value as f64)])
 				.await?;
@@ -169,8 +171,10 @@ impl DbClient {
 			.prepare("INSERT INTO metrics (timestamp, name, value) VALUES ($1, $2, $3)")
 			.await?;
 
-		let ts =
-			DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp_opt(message.timestamp, 0).unwrap(), Utc);
+		let ts = DateTime::<Utc>::from_utc(
+			NaiveDateTime::from_timestamp_opt(message.timestamp, 0).unwrap(),
+			Utc,
+		);
 		client
 			.execute(&stmt, &[&ts, &message.name, &(message.value as f64)])
 			.await?;
